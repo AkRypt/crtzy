@@ -1,5 +1,5 @@
-import { updateSession } from "@/app/utils/supabase/middleware"
 import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs"
+import { updateSession } from "./app/utils/supabase/middleware"
 
 export async function middleware(request) {
   return await updateSession(request)
