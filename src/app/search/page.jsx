@@ -21,95 +21,82 @@ import { getInfluencers } from "./actions";
 
 export default function Search() {
 
+    const [loading, setLoading] = useState(true)
+
     const [influencers, setInfluencers] = useState([])
     const getInf = async () => {
         setInfluencers(await getInfluencers());
+        setLoading(false)
     }
 
     useEffect(() => {
         getInf();
     }, [])
 
-    console.log(influencers)
-
-
-    // -- Filters --
-    // Category of content --
-    // Country --
-    // City --
-    // Follower count --
-    // Tags
-    // Content Languages
-    // Gender
-    // Age (Optional)
-    // Social Media Apps (Later)
     const [selectedCategory, setSelectedCategory] = useState(null)
     const [selectedCountry, setSelectedCountry] = useState(null)
-    const [selectedCity, setSelectedCity] = useState(null)
+    const [selectedstate, setSelectedstate] = useState(null)
     const [followerCnt, setFollowerCnt] = useState([5000]);
-    const [tags, setTags] = useState(["dance", "indian", "atlanta"])
+    const [tagInputValue, setTagInputValue] = useState("")
+    const [tags, setTags] = useState([])
     const [languages, setLanguages] = useState([])
     const [selectedGender, setGender] = useState(null)
 
-    const categories = [
-        { id: 1, name: "Dance" },
-        { id: 2, name: "Singing" },
-        { id: 3, name: "Makeup" },
-        { id: 4, name: "Travel" },
-    ]
-    const countries = [
-        { id: 1, name: "India" },
-        { id: 2, name: "USA" },
-        { id: 3, name: "UK" },
-        { id: 4, name: "Australia" },
-    ]
-    const cities = [
-        { id: 1, name: "Mumbai" },
-        { id: 2, name: "Delhi" },
-        { id: 3, name: "Bangalore" },
-    ]
-    const allLanguages = [
-        { id: 1, name: "English" },
-        { id: 2, name: "Hindi" },
-        { id: 3, name: "Spanish" },
-        { id: 4, name: "French" },
-    ]
-    const genders = ["Male", "Female", "Other"]
+    const categories = constants.CATEGORIES_LIST
+    const countries = constants.COUNTRIES_LIST
+    const [states, setStates] = useState([])
+    const genders = constants.GENDERS_LIST
+    const allLanguages = constants.LANGUAGES_LIST
 
-    // const influencers = [
-    //     { 
-    //         id: 1, 
-    //         name: "Jane Doe", 
-    //         username: "janexx12",
-    //         image: assets.INF_CARD,
-    //         categories: ["Dance", "Fitness"], 
-    //         socials: ["instagram", "twitter", "tiktok"],
-    //         country: "USA",
-    //         city: "Atlanta",
-    //         followers: 10000,
-    //         tags: ["dance", "indian", "atlanta"],
-    //         languages: ["english", "hindi"],
-    //         gender: "Female",
-    //     },
-    //     { 
-    //         id: 2, 
-    //         name: "John Doe", 
-    //         username: "johnxx12", 
-    //         image: assets.INF_CARD,
-    //         categories: ["Workout", "Fitness"], 
-    //         socials: ["instagram", "twitter", "tiktok"],
-    //         country: "USA",
-    //         city: "NYC",
-    //         followers: 20000,
-    //         tags: ["dance", "fitness", "nyc"],
-    //         languages: ["english", "hindi"],
-    //         gender: "Male",
-    //     },
-    // ]
+    const onSelectCountry = (country_id) => {
+        const selectedCountry = countries.find(country => country.id === country_id);
+        if (selectedCountry && selectedCountry.states) {
+            setStates(selectedCountry.states);
+        }
+    }
     
+    const handleTagInput = () => {
+        if (tagInputValue && !tags.includes(tagInputValue)) {
+            setTags([...tags, tagInputValue])
+        }
+        setTagInputValue("")
+    }
+
+    const deleteTag = (tag) => {
+        setTags(tags.filter(t => t !== tag))
+    }
+    const deleteLang = (languageId) => {
+        setLanguages(languages.filter(l => l !== languageId))
+    }
+
+    const onClickApply = () => {
+        const filters = [
+            { category: selectedCategory },
+            { country: selectedCountry },
+            { state: selectedstate },
+            { followerCnt: followerCnt },
+            { tags: tags },
+            { languages: languages },
+            { gender: selectedGender }
+        ]
+    }
+
     return (
         <main>
             <Navbar />
+
+            {/* Loading animation */}
+            {loading && (
+                <div class="fixed top-0 left-0 z-50 w-full h-full bg-black bg-opacity-50 flex justify-center items-center h-screen">
+                    <div class="relative inline-flex">
+                        <div class="w-8 h-8 bg-orange-500 rounded-full"></div>
+                        <div class="w-8 h-8 bg-orange-500 rounded-full absolute top-0 left-0 animate-ping"></div>
+                        <div class="w-8 h-8 bg-orange-500 rounded-full absolute top-0 left-0 animate-pulse"></div>
+                    </div>
+                </div>
+            )}
+
+
             <div className="flex flex-col md:flex-row mx-auto px-10">
                 {/* Filter Section */}
                 <div className="p-4 md:w-1/4 bg-gradient-to-r from-orange-200 to-orange-300">
@@ -137,7 +124,7 @@ export default function Search() {
                     {/* Country */}
                     <div className="mb-2">
                         <label htmlFor="followerCnt" className="text-sm font-semibold mb-4">Country</label>
-                        <Select className="mb-4" onValueChange={(value) => setSelectedCountry(value)}>
+                        <Select className="mb-4" onValueChange={(value) => onSelectCountry(value)}>
                         <SelectTrigger className="w-[90%] bg-white">
                             <SelectValue placeholder="Select a Country" />
                         </SelectTrigger>
@@ -153,24 +140,27 @@ export default function Search() {
                         </Select>
                     </div>
 
-                    {/* City */}
-                    <div className="mb-2">
-                        <label htmlFor="followerCnt" className="text-sm font-semibold mb-4">City</label>
-                        <Select onValueChange={(value) => setSelectedCity(value)}>
-                        <SelectTrigger className="w-[90%] bg-white">
-                            <SelectValue placeholder="Select a City" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectGroup>
-                                {
-                                    cities.map((city) => {
-                                        return <SelectItem key={city.id} value={city.id}>{city.name}</SelectItem>
-                                    })
-                                }
-                            </SelectGroup>
-                        </SelectContent>
-                        </Select>
-                    </div>
+                    {/* State */}
+                    {
+                        states.length > 0 ?
+                        <div className="mb-2">
+                            <label htmlFor="followerCnt" className="text-sm font-semibold mb-4">State</label>
+                            <Select onValueChange={(value) => setSelectedstate(value)}>
+                            <SelectTrigger className="w-[90%] bg-white">
+                                <SelectValue placeholder="Select a State" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectGroup>
+                                    {
+                                        states.map((state) => {
+                                            return <SelectItem key={state.id} value={state.id}>{state.name}</SelectItem>
+                                        })
+                                    }
+                                </SelectGroup>
+                            </SelectContent>
+                            </Select>
+                        </div> : null
+                    }
 
 
                     {/* Followers range */}
@@ -190,11 +180,27 @@ export default function Search() {
                     {/* <!-- Tags --> */}
                     <div className="mb-4">
                         <h3 className="text-sm font-semibold mb-2">Tags</h3>
-                        <CZInput placeholder={"Enter Tags"}  />
+                        <div className="flex items-center">
+                            <input
+                                className={`px-3 py-2 border rounded-md w-[80%] bg-white bg-input text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50`}
+                                type="text"
+                                placeholder={"Enter Tags"}
+                                value={tagInputValue}
+                                onChange={(e) => setTagInputValue(e.target.value)}
+                            />
+                            <button onClick={() => handleTagInput()} className="bg-white rounded-full p-1 ml-2 hover:bg-gray-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" strokeWidth={3} fill="none" stroke="orange" className="w-5 h-5">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                                </svg>
+                            </button>
+                        </div>
                         <div className="flex flex-wrap mt-2">
                             {
                                 tags.map((tag) => {
-                                    return <span key={tag} className="bg-white border border-orange-500 text-black px-2 py-1 rounded-full mr-2 mb-2">{tag}</span>
+                                    return <span key={tag} className="bg-white border border-orange-500 text-sm text-black px-2 py-1 rounded-full mr-1 mb-2">
+                                        {tag}
+                                        <button className="ml-2 text-red-500 focus:outline-none" onClick={() => deleteTag(tag)}>x</button>
+                                    </span>
                                 })
                             }
                         </div>
@@ -221,7 +227,10 @@ export default function Search() {
                             {
                                 languages.map((languageId) => {
                                     const selectedLanguage = allLanguages.find(lang => lang.id === languageId);
-                                    return <span key={languageId} className="bg-white border border-orange-500 text-black px-2 py-1 rounded-full mr-2 mb-2">{selectedLanguage.name}</span>
+                                    return <span key={languageId} className="bg-white border border-orange-500 text-sm text-black px-2 py-1 rounded-full mr-1 mb-2">
+                                        {selectedLanguage.name}
+                                        <button className="ml-2 text-red-500 focus:outline-none" onClick={() => deleteLang(languageId)}>x</button>
+                                    </span>
                                 })
                             }
                         </div>
@@ -238,16 +247,24 @@ export default function Search() {
                                 <SelectGroup>
                                     {
                                         genders.map((gender) => {
-                                            return <SelectItem key={gender} value={gender}>{gender}</SelectItem>
+                                            return <SelectItem key={gender.id} value={gender.id}>{gender.name}</SelectItem>
                                         })
                                     }
                                 </SelectGroup>
                             </SelectContent>
                         </Select>
                         <div className="flex flex-wrap mt-2">
-                            {selectedGender && <span key={selectedGender} className="bg-white border border-orange-500 text-black px-2 py-1 rounded-full mr-2 mb-2">{selectedGender}</span>}
+                            {selectedGender && 
+                            <span key={selectedGender} className="bg-white border border-orange-500 text-sm text-black px-2 py-1 rounded-full mr-1 mb-2">
+                                {genders.find(gender => gender.id === selectedGender).name}
+                                <button className="ml-2 text-red-500 focus:outline-none" onClick={() => setGender(null)}>x</button>
+                            </span>}
                         </div>
                     </div>
+
+                    <button type="submit" onSubmit={"applyFilters"}
+                    class="text-white bg-orange-500 hover:bg-orange-600 focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-orange-600 dark:hover:bg-orange-600 dark:focus:ring-orange-500">
+                        Apply</button>
                 </div>
 
                 {/* Right Side */}
@@ -277,12 +294,12 @@ export default function Search() {
                                 return <Link href={{
                                             pathname: '/profile',
                                             query: {
-                                                inf_id: influencer.id
+                                                inf_id: influencer.inf_id
                                             }
                                         }}>
                                             <div 
                                             className="bg-white shadow-md rounded-lg overflow-hidden w-auto hover:shadow-lg cursor-pointer">
-                                                <img src={influencer.profile_picture_url} alt="Influencer 1" className="w-full h-64 object-cover" />
+                                                <img src={influencer.profile_picture_url || assets.INF_PLACEHOLDER} alt="Influencer 1" className="w-full h-48 object-cover" />
                                                 <div className="p-3">
                                                     <div className="flex justify-between -mb-2">
                                                         <h3 className="text-lg font-semibold">{influencer.name}</h3>
@@ -308,7 +325,7 @@ export default function Search() {
                                                             <path fillRule="evenodd" d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clipRule="evenodd" />
                                                         </svg>
                                                         <p className="text-gray-800 ml-1 text-sm">
-                                                            {influencer.city}, {influencer.country}
+                                                            {influencer.state}, {influencer.country}
                                                         </p>
                                                     </div>
                                                     <div className="flex">
