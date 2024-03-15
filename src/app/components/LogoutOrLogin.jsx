@@ -1,25 +1,38 @@
+'use client';
 
 import Link from "next/link";
-import { createClient } from "../utils/supabase/server";
+import { createClient } from "../utils/supabase/client";
 import LogoutBtn from "./LogoutBtn";
+import { useEffect, useState } from "react";
 
-export default async function LogoutOrLogin() {
-  
-    const supabase = createClient();
-    const {data} = await supabase.auth.getUser();
-    
-    if (data.user) {
-        return (
-            <div>
-                <LogoutBtn />
-            </div>
-        )
-    }
+export default function LogoutOrLogin() {
+    const [userPresent, setUserPresent] = useState(false);
+
+    useEffect(() => {
+        const checkUser = async () => {   
+            const supabase = createClient();
+            const {data} = await supabase.auth.getUser();
+
+            console.log(data.user)
+
+            if (data.user) setUserPresent(true);
+        }
+
+        checkUser();
+    }, []);
+
 
     return (
         <div>
-            <Link className="px-4 py-2 bg-ornage-900 hover:bg-indigo-600 text-gray-50 rounded-xl flex items-center gap-2" 
-            href="/login">Login</Link>
+            {   userPresent ?
+                <div>
+                    <LogoutBtn />
+                </div>:
+                <div>
+                    <Link className="text-white bg-orange-500 hover:bg-orange-600 focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-orange-600 dark:hover:bg-orange-600 dark:focus:ring-orange-500" 
+                    href={{pathname: '/login'}}>Login</Link>
+                </div>
+            }
         </div>
     )
 }

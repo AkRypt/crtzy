@@ -31,10 +31,12 @@ export default function Login() {
         <div className="md:flex md:items-center">
           <div className="md:w-1/3"></div>
           <div className="md:w-2/3">
-            <button className="shadow bg-orange-500 hover:bg-orange-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded" formAction={login}>
+            <button className="shadow bg-orange-500 hover:bg-orange-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded" 
+            formAction={login}>
               Log in
             </button>
-            <button className="shadow bg-orange-500 hover:bg-orange-400 focus:shadow-outline ml-5 focus:outline-none text-white font-bold py-2 px-4 rounded" formAction={signup}>
+            <button className="shadow bg-orange-500 hover:bg-orange-400 focus:shadow-outline ml-5 focus:outline-none text-white font-bold py-2 px-4 rounded" 
+            formAction={signup}>
               Sign up
             </button>
           </div>

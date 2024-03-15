@@ -5,6 +5,7 @@ import Navbar from "../components/Navbar";
 
 export default async function Explore() {
     const supabase = createClientComponentClient();
+    
 
     return (
         <div className="bg-white">

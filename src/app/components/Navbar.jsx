@@ -3,8 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import constants from '../constants';
-// import { createClient } from '../utils/supabase/server';
-// import LogoutOrLogin from "../components/LogoutOrLogin";
+import LogoutOrLogin from './LogoutOrLogin';
 
 const navigation = [
   { name: constants.SEARCH, href: '/search' },
@@ -13,7 +12,6 @@ const navigation = [
 ];
 
 const Navbar = () => {
-    // const supabase = createClient();
     const pathname = usePathname();
 
     return (
@@ -36,8 +34,7 @@ const Navbar = () => {
                     ))}
                 </div>
                 <div className="order-2 md:order-3">
-                    {/* <LogoutOrLogin /> */}
-                    <p className="text-black">Logout</p>
+                    <LogoutOrLogin />
                 </div>
             </div>
         </nav>
