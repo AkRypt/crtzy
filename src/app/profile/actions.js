@@ -4,7 +4,6 @@ import { createClient } from "../utils/supabase/client";
 export async function getInfluencer(inf_id) {
     const supabase = createClient();
 
-    console.log("inf", inf_id)
     const { data, error, status } = await supabase
         .from('influencer')
         .select('*')

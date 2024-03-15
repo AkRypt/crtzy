@@ -13,7 +13,7 @@ export async function logout() {
         redirect('/error')
     }
 
-    revalidatePath('/', '/layout')
+    revalidatePath('/')
     revalidatePath('/login')
     redirect('/login');
 }

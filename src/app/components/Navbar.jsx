@@ -8,7 +8,7 @@ import LogoutOrLogin from './LogoutOrLogin';
 const navigation = [
   { name: constants.SEARCH, href: '/search' },
   { name: constants.EXPLORE, href: '/explore' },
-  { name: constants.COMMUNITY, href: '/community' },
+  { name: constants.COMMUNITY, href: '/edit-profile' },
 ];
 
 const Navbar = () => {

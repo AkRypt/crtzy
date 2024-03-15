@@ -11,11 +11,9 @@ export default function LogoutOrLogin() {
     useEffect(() => {
         const checkUser = async () => {   
             const supabase = createClient();
-            const {data} = await supabase.auth.getUser();
+            const {data: { user }} = await supabase.auth.getUser();
 
-            console.log(data.user)
-
-            if (data.user) setUserPresent(true);
+            if (user) setUserPresent(true);
         }
 
         checkUser();

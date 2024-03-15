@@ -174,18 +174,20 @@ export default function Search() {
                     <div className="mb-4">
                         <h3 className="text-sm font-semibold mb-2">Tags</h3>
                         <div className="flex items-center">
-                            <input
-                                className={`px-3 py-2 border rounded-md w-[80%] bg-white bg-input text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50`}
-                                type="text"
-                                placeholder={"Enter Tags"}
-                                value={tagInputValue}
-                                onChange={(e) => setTagInputValue(e.target.value)}
-                            />
-                            <button onClick={() => handleTagInput()} className="bg-white rounded-full p-1 ml-2 hover:bg-gray-100">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" strokeWidth={3} fill="none" stroke="orange" className="w-5 h-5">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                                </svg>
-                            </button>
+                            <form action={handleTagInput}>
+                                <input
+                                    className={`px-3 py-2 border rounded-md w-[80%] bg-white bg-input text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50`}
+                                    type="text"
+                                    placeholder={"Enter Tags"}
+                                    value={tagInputValue}
+                                    onChange={(e) => setTagInputValue(e.target.value)}
+                                    />
+                                <button type="submit" className="bg-white rounded-full p-1 ml-2 hover:bg-gray-100">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" strokeWidth={3} fill="none" stroke="orange" className="w-5 h-5">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                                    </svg>
+                                </button>
+                            </form>
                         </div>
                         <div className="flex flex-wrap mt-2">
                             {
@@ -256,26 +258,25 @@ export default function Search() {
                     </div>
 
                     <button type="submit" onSubmit={"applyFilters"}
-                    class="text-white bg-orange-500 hover:bg-orange-600 focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-orange-600 dark:hover:bg-orange-600 dark:focus:ring-orange-500">
+                    className="text-white bg-orange-500 hover:bg-orange-600 focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-orange-600 dark:hover:bg-orange-600 dark:focus:ring-orange-500">
                         Apply</button>
                 </div>
 
                 {/* Right Side */}
 
-
                 {/* <!-- Influencer Cards --> */}
                 <div className="p-4 md:w-3/4">
-                    <form class="max-w-md mb-4">   
-                        <label for="default-search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                                <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                    <form className="max-w-md mb-4">   
+                        <label htmlFor="default-search" className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
+                        <div className="relative">
+                            <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                                <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
                                 </svg>
                             </div>
-                            <input type="search" id="search" class="block w-full p-4 ps-10 text-sm text-gray-900 border border-orange-300 rounded-lg bg-orange-10 focus:ring-orange-500 focus:border-orange-500 dark:bg-orange-700 dark:border-orange-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-orange-500 dark:focus:border-orange-500" 
+                            <input type="search" id="search" className="block w-full p-4 ps-10 text-sm text-gray-900 border border-orange-300 rounded-lg bg-orange-10 focus:ring-orange-500 focus:border-orange-500 dark:bg-orange-700 dark:border-orange-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-orange-500 dark:focus:border-orange-500" 
                             placeholder="Search Creators" />
-                            <button type="submit" class="text-white absolute end-2.5 bottom-2.5 bg-orange-500 hover:bg-orange-600 focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-orange-600 dark:hover:bg-orange-600 dark:focus:ring-orange-500">Search</button>
+                            <button type="submit" className="text-white absolute end-2.5 bottom-2.5 bg-orange-500 hover:bg-orange-600 focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-orange-600 dark:hover:bg-orange-600 dark:focus:ring-orange-500">Search</button>
                         </div>
                     </form>
                     <div className="flex justify-between items-center mb-2">
@@ -318,7 +319,7 @@ export default function Search() {
                                                             <path fillRule="evenodd" d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clipRule="evenodd" />
                                                         </svg>
                                                         <p className="text-gray-800 ml-1 text-sm">
-                                                            {influencer.state}, {influencer.country}
+                                                            {influencer.state} - {influencer.country}
                                                         </p>
                                                     </div>
                                                     <div className="flex">
