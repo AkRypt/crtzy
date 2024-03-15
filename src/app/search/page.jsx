@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import constants from "../constants";
 import Navbar from "../components/Navbar";
+import Loader from "../components/Loader";
  
 import {
     Select,
@@ -86,15 +87,7 @@ export default function Search() {
             <Navbar />
 
             {/* Loading animation */}
-            {loading && (
-                <div class="fixed top-0 left-0 z-50 w-full h-full bg-black bg-opacity-50 flex justify-center items-center h-screen">
-                    <div class="relative inline-flex">
-                        <div class="w-8 h-8 bg-orange-500 rounded-full"></div>
-                        <div class="w-8 h-8 bg-orange-500 rounded-full absolute top-0 left-0 animate-ping"></div>
-                        <div class="w-8 h-8 bg-orange-500 rounded-full absolute top-0 left-0 animate-pulse"></div>
-                    </div>
-                </div>
-            )}
+            {loading && <Loader />}
 
 
             <div className="flex flex-col md:flex-row mx-auto px-10">
