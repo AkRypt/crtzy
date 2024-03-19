@@ -90,7 +90,7 @@ export default function Search() {
             {loading && <Loader />}
 
 
-            <div className="flex flex-col md:flex-row mx-auto px-10">
+            <div className="flex flex-col md:flex-row mx-auto px-10 md:w-[90vw]">
                 {/* Filter Section */}
                 <div className="p-4 md:w-1/4 bg-gradient-to-r from-orange-200 to-orange-300">
                     <h2 className="text-lg font-bold mb-4">Filter</h2>

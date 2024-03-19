@@ -20,6 +20,16 @@ import { useRouter } from "next/navigation";
 export default function EditProfile() {
 
     const router = useRouter();
+    const searchParams = useSearchParams();
+
+    const [influencer, setInfluencer] = useState(null)
+    const getInf = async () => {
+        setInfluencer(await getInfluencer(searchParams.get('inf_id')));
+        setLoading(false)
+    }
+    useEffect(() => {
+        getInf();
+    }, [])
 
     const [loading, setLoading] = useState(false);
     const [name, setName] = useState("");
@@ -41,6 +51,7 @@ export default function EditProfile() {
     const [states, setStates] = useState([])
     const genders = constants.GENDERS_LIST
     const allLanguages = constants.LANGUAGES_LIST
+
 
     const onSelectCountry = (country_id) => {
         const selectedCountry = countries.find(country => country.id === country_id);
@@ -244,7 +255,7 @@ export default function EditProfile() {
                                     <SelectGroup>
                                         {
                                             genders.map((gender) => {
-                                                return <SelectItem key={gender.id} value={gender.id}>{gender.name}</SelectItem>
+                                                return <SelectItem key={gender.name} value={gender.name}>{gender.name}</SelectItem>
                                             })
                                         }
                                     </SelectGroup>
@@ -253,7 +264,8 @@ export default function EditProfile() {
                             <div className="flex flex-wrap mt-2">
                                 {selectedGender && 
                                 <span key={selectedGender} className="bg-white border border-orange-500 text-sm text-black px-2 py-1 rounded-full mr-1 mb-2">
-                                    {genders.find(gender => gender.id === selectedGender).name}
+                                    {/* {genders.find(gender => gender.id === selectedGender).name} */}
+                                    {selectedGender}
                                     <button className="ml-2 text-red-500 focus:outline-none" onClick={() => setGender(null)}>x</button>
                                 </span>}
                             </div>

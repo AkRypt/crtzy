@@ -4,12 +4,17 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import constants from '../constants';
 import LogoutOrLogin from './LogoutOrLogin';
+import ProfileBtn from './ProfileBtn';
 
 const navigation = [
   { name: constants.SEARCH, href: '/search' },
   { name: constants.EXPLORE, href: '/explore' },
   { name: constants.COMMUNITY, href: '/edit-profile' },
 ];
+
+const onClickUser = () => {
+
+}
 
 const Navbar = () => {
     const pathname = usePathname();
@@ -33,7 +38,8 @@ const Navbar = () => {
                         </Link>
                     ))}
                 </div>
-                <div className="order-2 md:order-3">
+                <div className="order-2 flex flex-row items-center md:order-3">
+                    <ProfileBtn />
                     <LogoutOrLogin />
                 </div>
             </div>
