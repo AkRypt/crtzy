@@ -62,8 +62,8 @@ export default function EditProfile() {
     }
 
     const handleTagInput = () => {
-        if (tagInputValue && !tags.includes(tagInputValue)) {
-            setTags([...tags, tagInputValue])
+        if (tagInputValue && !tags.includes(tagInputValue.toLowerCase())) {
+            setTags([...tags, tagInputValue.toLowerCase()])
         }
         setTagInputValue("")
     }

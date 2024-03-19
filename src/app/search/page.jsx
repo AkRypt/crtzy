@@ -18,11 +18,14 @@ import { Slider } from "../../components/ui/slider"
 import { CZInput} from '../../components/ui'
 import assets from "../../../public/assets";
 import Link from "next/link";
-import { getInfluencers } from "./actions";
+import { filterInfluencers, getInfluencers } from "./actions";
 
 export default function Search() {
 
     const [loading, setLoading] = useState(true)
+    const [filtersApplied, setFiltersApplied] = useState(false)
+    const [isValueChanged, setIsValueChanged] = useState(true) // set to false when working on this
+    const [applyBtn, setApplyBtn] = useState(false)
 
     const [influencers, setInfluencers] = useState([])
     const getInf = async () => {
@@ -31,17 +34,34 @@ export default function Search() {
     }
 
     useEffect(() => {
-        getInf();
-    }, [])
+        if (!filtersApplied) {
+            setSelectedCategory(null)
+            setSelectedCountry(null)
+            setSelectedstate(null)
+            setFollowerCnt([0])
+            setTagInputValue("")
+            setTags([])
+            setLanguages([])
+            setGender(undefined)
+
+            getInf();
+        }
+    }, [filtersApplied])
+
+    // This is to how apply button only if changes were made
+    useEffect(() => {
+        if (isValueChanged) setApplyBtn(true)
+        else setApplyBtn(false)
+    }, [isValueChanged])
 
     const [selectedCategory, setSelectedCategory] = useState(null)
     const [selectedCountry, setSelectedCountry] = useState(null)
     const [selectedstate, setSelectedstate] = useState(null)
-    const [followerCnt, setFollowerCnt] = useState([5000]);
+    const [followerCnt, setFollowerCnt] = useState([0]);
     const [tagInputValue, setTagInputValue] = useState("")
     const [tags, setTags] = useState([])
     const [languages, setLanguages] = useState([])
-    const [selectedGender, setGender] = useState(null)
+    const [selectedGender, setGender] = useState(undefined)
 
     const categories = constants.CATEGORIES_LIST
     const countries = constants.COUNTRIES_LIST
@@ -49,18 +69,25 @@ export default function Search() {
     const genders = constants.GENDERS_LIST
     const allLanguages = constants.LANGUAGES_LIST
 
-    const onSelectCountry = (country_id) => {
-        const selectedCountry = countries.find(country => country.id === country_id);
+    const onSelectCountry = (dd_country) => {
+        const selectedCountry = countries.find(country => country.name === dd_country);
         if (selectedCountry && selectedCountry.states) {
             setStates(selectedCountry.states);
         }
+        setSelectedCountry(selectedCountry.name);
     }
     
     const handleTagInput = () => {
-        if (tagInputValue && !tags.includes(tagInputValue)) {
-            setTags([...tags, tagInputValue])
+        if (tagInputValue && !tags.includes(tagInputValue.toLowerCase())) {
+            setTags([...tags, tagInputValue.toLowerCase()])
         }
         setTagInputValue("")
+    }
+
+    const handleLanguages = (value) => {
+        if (value && !languages.includes(value)) {
+            setLanguages([...languages, value])
+        }
     }
 
     const deleteTag = (tag) => {
@@ -70,16 +97,27 @@ export default function Search() {
         setLanguages(languages.filter(l => l !== languageId))
     }
 
-    const onClickApply = () => {
-        const filters = [
-            { category: selectedCategory },
-            { country: selectedCountry },
-            { state: selectedstate },
-            { followerCnt: followerCnt },
-            { tags: tags },
-            { languages: languages },
-            { gender: selectedGender }
-        ]
+    const onClickApply = async () => {
+        const filters = { 
+            categories: selectedCategory ? [selectedCategory] : null,
+            country: selectedCountry,
+            state: selectedstate,
+            followers: followerCnt[0] > 0 ? followerCnt[0] : null,
+            tags: tags.length > 0 ? tags : null,
+            languages: languages.length > 0 ? languages : null,
+            gender: selectedGender ? selectedGender : null
+        }
+
+        let filterCnt = 0
+        for (const [key, value] of Object.entries(filters)) {
+            if (value !== null) {
+                filterCnt++
+            }
+        }
+        if (filterCnt > 0) {
+            setInfluencers(await filterInfluencers(filters))
+            setFiltersApplied(true)
+        }
     }
 
     return (
@@ -106,7 +144,7 @@ export default function Search() {
                             <SelectGroup>
                                 {
                                     categories.map((category) => {
-                                        return <SelectItem key={category.id} value={category.id}>{category.name}</SelectItem>
+                                        return <SelectItem key={category.name} value={category.name}>{category.name}</SelectItem>
                                     })
                                 }
                             </SelectGroup>
@@ -125,7 +163,7 @@ export default function Search() {
                             <SelectGroup>
                                 {
                                     countries.map((country) => {
-                                        return <SelectItem key={country.id} value={country.id}>{country.name}</SelectItem>
+                                        return <SelectItem key={country.name} value={country.name}>{country.name}</SelectItem>
                                     })
                                 }
                             </SelectGroup>
@@ -146,7 +184,7 @@ export default function Search() {
                                 <SelectGroup>
                                     {
                                         states.map((state) => {
-                                            return <SelectItem key={state.id} value={state.id}>{state.name}</SelectItem>
+                                            return <SelectItem key={state.name} value={state.name}>{state.name}</SelectItem>
                                         })
                                     }
                                 </SelectGroup>
@@ -164,7 +202,7 @@ export default function Search() {
                             id="followerCnt"
                             defaultValue={followerCnt}
                             className="mt-2 bg-orange w-[90%]"
-                            max={100000}
+                            max={30000}
                             step={1000}
                             onValueChange={(value) => {setFollowerCnt(value)}}
                         />
@@ -204,7 +242,7 @@ export default function Search() {
                     {/* Content Languages */}
                     <div className="mb-2">
                         <label htmlFor="followerCnt" className="text-sm font-semibold">Languages</label>
-                        <Select className="mb-4" onValueChange={(value) => setLanguages([...languages, value])}>
+                        <Select className="mb-4" onValueChange={(value) => handleLanguages(value)}>
                             <SelectTrigger className="w-[90%] bg-white">
                                 <SelectValue placeholder="Select Languages" />
                             </SelectTrigger>
@@ -212,7 +250,7 @@ export default function Search() {
                                 <SelectGroup>
                                     {
                                         allLanguages.map((language) => {
-                                            return <SelectItem key={language.id} value={language.id}>{language.name}</SelectItem>
+                                            return <SelectItem key={language.name} value={language.name}>{language.name}</SelectItem>
                                         })
                                     }
                                 </SelectGroup>
@@ -220,11 +258,11 @@ export default function Search() {
                         </Select>
                         <div className="flex flex-wrap mt-2">
                             {
-                                languages.map((languageId) => {
-                                    const selectedLanguage = allLanguages.find(lang => lang.id === languageId);
-                                    return <span key={languageId} className="bg-white border border-orange-500 text-sm text-black px-2 py-1 rounded-full mr-1 mb-2">
-                                        {selectedLanguage.name}
-                                        <button className="ml-2 text-red-500 focus:outline-none" onClick={() => deleteLang(languageId)}>x</button>
+                                languages.map((language) => {
+                                    // const selectedLanguage = allLanguages.find(lang => lang.id === languageId);
+                                    return <span key={language} className="bg-white border border-orange-500 text-sm text-black px-2 py-1 rounded-full mr-1 mb-2">
+                                        {language}
+                                        <button className="ml-2 text-red-500 focus:outline-none" onClick={() => deleteLang(language)}>x</button>
                                     </span>
                                 })
                             }
@@ -234,7 +272,7 @@ export default function Search() {
                     {/* Gender */}
                     <div className="mb-2">
                         <label htmlFor="gender" className="text-sm font-semibold">Gender</label>
-                        <Select className="mb-4" onValueChange={(value) => setGender(value)}>
+                        <Select className="mb-4" value={selectedGender} defaultValue={selectedGender} onValueChange={(value) => setGender(value)}>
                             <SelectTrigger className="w-[90%] bg-white">
                                 <SelectValue placeholder="Select Gender" />
                             </SelectTrigger>
@@ -242,7 +280,7 @@ export default function Search() {
                                 <SelectGroup>
                                     {
                                         genders.map((gender) => {
-                                            return <SelectItem key={gender.id} value={gender.id}>{gender.name}</SelectItem>
+                                            return <SelectItem key={gender.name} value={gender.name}>{gender.name}</SelectItem>
                                         })
                                     }
                                 </SelectGroup>
@@ -251,15 +289,21 @@ export default function Search() {
                         <div className="flex flex-wrap mt-2">
                             {selectedGender && 
                             <span key={selectedGender} className="bg-white border border-orange-500 text-sm text-black px-2 py-1 rounded-full mr-1 mb-2">
-                                {genders.find(gender => gender.id === selectedGender).name}
+                                {/* {genders.find(gender => gender.id === selectedGender).name} */}
+                                {selectedGender}
                                 <button className="ml-2 text-red-500 focus:outline-none" onClick={() => setGender(null)}>x</button>
                             </span>}
                         </div>
                     </div>
 
-                    <button type="submit" onSubmit={"applyFilters"}
-                    className="text-white bg-orange-500 hover:bg-orange-600 focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-orange-600 dark:hover:bg-orange-600 dark:focus:ring-orange-500">
-                        Apply</button>
+                    <div className="flex justify-center mt-4">
+                        <button type="submit" onClick={onClickApply}
+                        className="text-white bg-orange-500 hover:bg-orange-600 focus:ring-4 focus:outline-none focus:ring-orange-3000 font-medium rounded-lg text-sm px-4 py-2 dark:bg-orange-600 dark:hover:bg-orange-600 dark:focus:ring-orange-500">
+                            Apply</button>
+                        {filtersApplied && <button type="button" onClick={() => setFiltersApplied(false)}
+                        className="text-white bg-orange-500 hover:bg-orange-600 focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-orange-600 dark:hover:bg-orange-600 dark:focus:ring-orange-500 ml-4">
+                            Reset</button>}
+                    </div>
                 </div>
 
                 {/* Right Side */}
